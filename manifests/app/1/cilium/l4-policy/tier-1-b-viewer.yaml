@@ -1,0 +1,16 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: tier-1-b
+spec:
+  endpointSelector:
+    matchLabels:
+      app: tier-1-app-b
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: vegeta2
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP

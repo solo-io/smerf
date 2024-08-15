@@ -1,0 +1,824 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-1
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-2
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-3
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-4
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-5
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-6
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-7
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-8
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-9
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-10
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-11
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-12
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-13
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-14
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-15
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-16
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-17
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-18
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-19
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-20
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-21
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-22
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-23
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-24
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tier-1-app
+  namespace: ns-25
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: tier-1-app
+    port: 8080
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-a
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v1
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: tier-1-app-b
+      port: 8080
+      weight: 1
+    matches:
+    - path:
+        type: Exact
+        value: /v2

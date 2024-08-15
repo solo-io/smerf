@@ -1,0 +1,20 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: tier-2-c
+spec:
+  endpointSelector:
+    matchLabels:
+      app: tier-2-app-c
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: tier-1-app-b
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP
+      rules:
+        http:
+        - method: "GET"
+          path: "/"

@@ -1,0 +1,24 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# list of resources to be applied
+resources:
+- ../base
+
+# patch Vegeta with GAMMA URL
+patches:
+- patch: |-
+    kind: not-important
+    metadata:
+      name: not-important
+    spec:
+      template:
+        spec:
+          containers:
+            - name: vegeta
+              args:
+                - "-c"
+                - 'sleep 5; for run in $(seq 1 100000); do echo "GET ${GAMMA_APP_URL}" | vegeta attack -dns-ttl=0 -keepalive -http2=true -rate ${REQUESTS_PER_SECOND}/1s -duration=${DURATION} -connections=${CONNECTIONS} -max-connections=${MAX_CONNECTIONS} -workers=${WORKERS} -max-workers=${MAX_WORKERS} | tee results.bin | vegeta report -type=text; done'
+  target:
+    kind: Deployment

@@ -1,0 +1,15 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: tier-1-a
+spec:
+  endpointSelector:
+    matchLabels:
+      app: tier-1-app-a
+  ingress:
+  - fromEntities:
+    - ingress
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP

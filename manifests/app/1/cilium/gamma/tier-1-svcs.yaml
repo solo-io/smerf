@@ -1,0 +1,424 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-1
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-2
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-3
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-4
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-5
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-6
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-7
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-8
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-9
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-10
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-11
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-12
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-13
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-14
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-15
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-16
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-17
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-18
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-19
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-20
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-21
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-22
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-23
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-24
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tier-1-app
+  namespace: ns-25
+  labels:
+    app: tier-1-app
+    tier: "1"
+spec:
+  selector:
+    tier: "1"
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080

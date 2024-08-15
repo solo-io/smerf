@@ -1,0 +1,14 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# list of resources to be Applied
+resources:
+- tier-1-a-viewer.yaml
+- tier-1-b-viewer.yaml
+- tier-2-a-viewer.yaml
+- tier-2-b-viewer.yaml
+- tier-2-c-viewer.yaml
+- tier-2-d-viewer.yaml
+- tier-3-a-viewer.yaml
+- tier-3-b-viewer.yaml

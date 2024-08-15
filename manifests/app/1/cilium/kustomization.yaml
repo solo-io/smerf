@@ -1,0 +1,32 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../base
+
+# patch nodeSelector and tolerations on all Deployments
+patches:
+- patch: |-
+    kind: not-important
+    metadata:
+      name: not-important
+    spec:
+      template:
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: node
+                    operator: NotIn
+                    values:
+                    - loadgen
+          tolerations:
+          - key: cloud.google.com/node
+            operator: Equal
+            value: "loadgen"
+            effect: NoSchedule
+  target:
+    kind: Deployment

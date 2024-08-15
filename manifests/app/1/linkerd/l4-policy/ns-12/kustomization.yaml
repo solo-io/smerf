@@ -1,0 +1,40 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# list of resources to be Applied
+resources:
+- ../base
+
+patches:
+# patch for all authorizationpolicies
+- target:
+    group: policy.linkerd.io
+    version: v1alpha1
+    kind: AuthorizationPolicy
+  patch: |-
+    - op: replace
+      path: /spec/requiredAuthenticationRefs/0/namespace
+      value: ns-12
+# more specific patch for tier-1-app-a-viewer-sleep
+- target:
+    group: policy.linkerd.io
+    version: v1alpha1
+    kind: AuthorizationPolicy
+    name: tier-1-app-a-viewer-sleep
+  patch: |-
+    - op: replace
+      path: /spec/requiredAuthenticationRefs/0/namespace
+      value: client
+# more specific patch for tier-1-app-b-viewer-sleep
+- target:
+    group: policy.linkerd.io
+    version: v1alpha1
+    kind: AuthorizationPolicy
+    name: tier-1-app-b-viewer-sleep
+  patch: |-
+    - op: replace
+      path: /spec/requiredAuthenticationRefs/0/namespace
+      value: client
+
+namespace: ns-12
