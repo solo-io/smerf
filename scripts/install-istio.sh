@@ -4,10 +4,13 @@ set -e
 
 # The version of Istio to install.
 ISTIO_VERSION=${ISTIO_VERSION:-"1.22.1"}
-# The repo to use for pulling Istio control-plane images.
+# The repo to use for pulling Istio container images.
 ISTIO_REPO=${ISTIO_REPO:-"docker.io/istio"}
 # A time unit, e.g. 1s, 2m, 3h, to wait for Istio control-plane component deployment rollout to complete.
 ROLLOUT_TIMEOUT=${ROLLOUT_TIMEOUT:-"5m"}
+
+# Source the utility functions
+source ./scripts/utils.sh
 
 # Check if the installation profile argument is provided
 if [ -z "$1" ]; then
@@ -44,11 +47,6 @@ if [[ ! " ${valid_istio_repos[*]} " =~ " $ISTIO_REPO " ]]; then
   exit 1
 fi
 
-# Function to check if a command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
 # Check if required CLI tools are installed
 for cmd in kubectl helm; do
   if ! command_exists $cmd; then
@@ -56,26 +54,6 @@ for cmd in kubectl helm; do
     exit 1
   fi
 done
-
-# Function to handle rollout status of a daemonset
-ds_rollout_status() {
-  local ds=$1
-  local ns=$2
-  kubectl rollout status ds/$ds -n $ns --timeout=$ROLLOUT_TIMEOUT || {
-    echo "Rollout status check failed for daemonset $ds/$ns: ${PIPESTATUS[0]}"
-    exit 1
-  }
-}
-
-# Function to handle rollout status of a deployment
-deploy_rollout_status() {
-  local deploy=$1
-  local ns=$2
-  kubectl rollout status deploy/$deploy -n $ns --timeout=$ROLLOUT_TIMEOUT || {
-    echo "Rollout status check failed for deployment $deploy/$ns: ${PIPESTATUS[0]}"
-    exit 1
-  }
-}
 
 # Add Istio helm repo
 helm repo add istio https://istio-release.storage.googleapis.com/charts
