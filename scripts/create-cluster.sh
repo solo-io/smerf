@@ -18,16 +18,14 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Function to remove the eksctl config file
-remove_eks_config() {
-    rm -rf clusterconfig.yaml
-}
-
 # Check if kubectl is installed
 if ! command_exists kubectl; then
     echo "kubectl is not installed. Please install kubectl before running this script."
     exit 1
 fi
+
+# Create the directory for the config file
+mkdir -p ./out/config
 
 # Check if the cluster type is EKS
 if [[ "$CLUSTER_TYPE" == "eks" || -z "$CLUSTER_TYPE" ]]; then
@@ -44,7 +42,7 @@ if [[ "$CLUSTER_TYPE" == "eks" || -z "$CLUSTER_TYPE" ]]; then
     fi
 
     # Create the EKS cluster configuration
-    cat << EOF > clusterconfig.yaml
+    cat << EOF > ./out/config/clusterconfig.yaml
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
@@ -76,7 +74,7 @@ EOF
 
     # Add taints if CILIUM_NODE_TAINT is true
     if [[ "$CILIUM_NODE_TAINT" == "true" ]]; then
-        cat << EOF >> clusterconfig.yaml
+        cat << EOF >> ./out/config/clusterconfig.yaml
   taints:
    - key: "node.cilium.io/agent-not-ready"
      value: "true"
@@ -86,10 +84,10 @@ EOF
 
     # Echo the contents of the clusterconfig.yaml file
     echo "Generated cluster configuration:"
-    cat clusterconfig.yaml
+    cat ./out/config/clusterconfig.yaml
 
     # Create the EKS cluster
-    eksctl create cluster -f clusterconfig.yaml &
+    eksctl create cluster -f ./out/config/clusterconfig.yaml &
     CLUSTER_CREATION_PID=$!
 
     # Wait for the cluster creation
@@ -98,7 +96,6 @@ EOF
         eksctl utils describe-stacks --cluster $CLUSTER_NAME
         if [[ "$DELETE_CLUSTER_ON_FAIL" == "true" ]]; then
             eksctl delete cluster --region=$REGION --name $CLUSTER_NAME
-            remove_eks_config
         fi
         exit 1
     }
@@ -113,7 +110,6 @@ EOF
         # Optionally delete the cluster if the DELETE_CLUSTER_ON_FAIL variable is set
         if [[ "$DELETE_CLUSTER_ON_FAIL" == "true" ]]; then
             eksctl delete cluster --name $CLUSTER_NAME
-            remove_eks_config
         fi
         exit 1
     fi
@@ -125,7 +121,6 @@ if [[ "$NODE_COUNT" -le "$NUM_LOAD_NODES" ]]; then
     echo "Not enough nodes to assign load generator roles. Expected at least $((NUM_LOAD_NODES + 1))."
     if [[ "$DELETE_CLUSTER_ON_FAIL" == "true" ]]; then
         eksctl delete cluster --name $CLUSTER_NAME
-        remove_eks_config
     fi
     exit 1
 fi
@@ -148,7 +143,6 @@ for addon in "${ADDON_ARRAY[@]}"; do
             
             if [[ "$DELETE_CLUSTER_ON_FAIL" == "true" ]]; then
                 eksctl delete cluster --name $CLUSTER_NAME
-                remove_eks_config
             fi
             
             exit 1

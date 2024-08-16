@@ -1,4 +1,15 @@
-# mesh-perf
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+  - [Prerequisites](#prerequisites)
+  - [Create a Cluster](#create-a-cluster)
+    - [Environment Variables](#environment-variables)
+  - [Run the Test App](#run-the-test-app)
+    - [Environment Variables](#environment-variables-1)
+  - [Run the Load Generators](#run-the-load-generators)
+    - [Environment Variables](#environment-variables-2)
+
+# Introduction
 
 Tools for testing the performance of service mesh implementations.
 
@@ -6,8 +17,9 @@ Tools for testing the performance of service mesh implementations.
 
 Ensure the following tools are installed:
 
-[kubectl](https://kubernetes.io/docs/tasks/tools/): The Kubernetes command-line tool.
-[eksctl](https://eksctl.io/): Required for managing EKS clusters.
+- [kubectl](https://kubernetes.io/docs/tasks/tools/): The Kubernetes command-line tool.
+- [eksctl](https://eksctl.io/): Required for managing EKS clusters.
+- [helm](https://helm.sh/docs/intro/install/): A package manager for Kubernetes.
 
 ## Create a Cluster
 
@@ -36,13 +48,13 @@ The `scripts/run-app.sh` script automates the creation of a 3-tier app used as a
 ### Environment Variables
 
 `NUM_NS`: The number of namespaced app instances, defaults to 1.
-`ROLLOUT_TIMEOUT`: The amount of time to wait for each app instance, defaults to 5m for 5-minutes.
+`ROLLOUT_TIMEOUT`: The amount of time to wait for each app deployment to rollout, defaults to 5m for 5-minutes.
 
-## Run the Load Generator
+## Run the Load Generators
 
 The `scripts/run-loadgen.sh` script automates the creation of vegeta deployment used to generate load against the test app.
 
 ### Environment Variables
 
 `NUM_NS`: The number of namespaced vegeta instances, defaults to 1.
-`ROLLOUT_TIMEOUT`: The amount of time to wait for each vegeta instance, defaults to 5m for 5-minutes.
+`ROLLOUT_TIMEOUT`: The amount of time to wait for each vegeta deployment to rollout, defaults to 5m for 5-minutes.

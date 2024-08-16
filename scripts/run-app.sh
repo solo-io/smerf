@@ -2,15 +2,16 @@
 
 set -e
 
-# Supported values for NUM_NS
-VALID_NUM_NS=(1 25)
-
-# Default values
+# The number of namespaces used to run the test app.
 NUM_NS=${NUM_NS:-"1"}
-ROLLOUT_TIMEOUT=${ROLLOUT_TIMEOUT:-"5m"} # A time unit, e.g. 1s, 2m, 3h
+# A time unit, e.g. 1s, 2m, 3h, to wait for a test app deployment rollout to complete.
+ROLLOUT_TIMEOUT=${ROLLOUT_TIMEOUT:-"5m"}
+
+# Supported values for the number of namespaces to run the app.
+valid_num_ns=(1 25)
 
 # Check if NUM_NS is valid
-if [[ ! " ${VALID_NUM_NS[*]} " =~ " $NUM_NS " ]]; then
+if [[ ! " ${valid_num_ns[*]} " =~ " $NUM_NS " ]]; then
   echo "Invalid value for NUM_NS. Supported values are 1 and 25."
   exit 1
 fi
