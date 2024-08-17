@@ -152,4 +152,6 @@ EOF
   ds_rollout_status "ztunnel" "istio-system"
 fi
 
+# TODO: Add support for sidecar.
+
 echo "Istio successfully installed!"
