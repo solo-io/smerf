@@ -3,11 +3,16 @@
 - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Prerequisites](#prerequisites)
+  - [Typical Workflow](#typical-workflow)
   - [Create a Cluster](#create-a-cluster)
   - [Run the Test App or Load Generators](#run-the-test-app-or-load-generators)
   - [Scale the Test App or Load Generators](#scale-the-test-app-or-load-generators)
   - [Install Istio](#install-istio)
   - [Update the Test App](#update-the-test-app)
+  - [Manual Operations](#manual-operations)
+    - [Cluster Node Pool Resizing](#cluster-node-pool-resizing)
+    - [Manual Testing](#manual-testing)
+    - [Istio](#istio)
   - [Cleanup](#cleanup)
     - [Delete the Test App or Load Generators](#delete-the-test-app-or-load-generators)
 
@@ -22,6 +27,80 @@ Ensure the following tools are installed:
 - [kubectl](https://kubernetes.io/docs/tasks/tools/): The Kubernetes command-line tool.
 - [eksctl](https://eksctl.io/): Required for managing EKS clusters.
 - [helm](https://helm.sh/docs/intro/install/): A package manager for Kubernetes.
+
+## Typical Workflow
+
+A typical workflow is:
+
+1. Create a Kubernetes cluster:
+
+   ```scripts/create-perf-cluster.sh```
+
+2. Run the test app:
+
+   ```./scripts/create.sh app```
+
+3. Run the load generators:
+
+   ```./scripts/create.sh loadgen```
+
+4. Create performance baseline reports:
+
+   ```./scripts/run-all-reports.sh <unique_report_name>```
+
+5. Scale down the load generators:
+
+   ```./scripts/scale.sh loadgen 0```
+
+6. Install Istio using ambient mode:
+
+   ```./scripts/install-istio.sh ambient```
+
+7. Add the test app to the Istio ambient mesh:
+
+   ```./scripts/update.sh app ambient```
+
+8. Scale up the load generators:
+
+   ```./scripts/scale.sh loadgen 1```
+
+9. Create ambient mTLS performance reports:
+
+   ```./scripts/run-all-reports.sh <unique_report_name>```
+
+10. Scale down the load generators:
+
+    ```./scripts/scale.sh loadgen 0```
+
+11. Apply Istio L4 auth policies:
+
+    ```./scripts/update.sh app ambient l4```
+
+12. Scale up the load generators:
+
+    ```./scripts/scale.sh loadgen 1```
+
+13. Create ambient mTLS+L4 Auth performance reports:
+
+    ```./scripts/run-all-reports.sh <unique_report_name>```
+
+14. Scale down the load generators:
+
+    ```./scripts/scale.sh loadgen 0```
+
+15. Create an ambient waypoint per namespace:
+
+    ```./scripts/update.sh app ambient waypoint```
+
+16. Apply Istio L7 auth policies:
+
+    ```./scripts/update.sh app ambient l7```
+
+17. Create ambient waypoint+L7 Auth performance reports:
+
+    ```./scripts/run-all-reports.sh <unique_report_name>```
+
+18. Scale down the load generators, uninstall Istio, or delete the cluster.
 
 ## Create a Cluster
 
@@ -79,7 +158,7 @@ The `scripts/install-istio.sh <profile>` script automates the installation of Is
 
 __Arguments:__
 
-- `profile`: The installation profile to use, supported options are `ambient` and `sidecar`.
+- `profile`: The installation profile to use. The only supported option is `ambient`.
 
 __Environment Variables:__
 
@@ -112,6 +191,53 @@ to the 3-tier test app instances.
 __Environment Variables:__
 
 - `NUM_NS`: The number of namespaced 3-tier test app or vegeta load generators instances, defaults to 1.
+
+## Manual Operations
+
+The following are optional manual operations for inspecting the test environment.
+
+### Cluster Node Pool Resizing
+
+If you want to scale up/down the `ng-1` node group:
+
+```bash
+eksctl scale nodegroup --cluster ${CLUSTER_NAME} --nodes ${NUM_NODES} --name ng-1
+```
+
+Check the status of the scaling:
+
+```bash
+eksctl get nodegroup --cluster ${CLUSTER_NAME} --name ng-1
+```
+
+### Manual Testing
+
+Exec into a vegeta load generator to run your own test:
+
+```bash
+kubectl exec -it deploy/vegeta1 --namespace ns-1 -c vegeta -- /bin/sh
+```
+
+Example test run:
+
+```bash
+echo "GET http://tier-1-app-a.ns-1.svc.cluster.local:8080" | vegeta attack -dns-ttl=0 -rate 500/1s -duration=2s | tee results.bin | vegeta report -type=text
+```
+
+### Istio
+
+Port-forward the waypoint (Envoy) admin endpoint to review configuration, stats, etc. This is useful to confirm traffic
+from the load generators is going through waypoints.
+
+```bash
+kubectl port-forward deploy/waypoint 15000:15000 -n <namespace>
+```
+
+Port-forward the ztunnel admin endpoint to review configuration, stats, etc.
+
+```bash
+kubectl port-forward -n istio-system ds/ztunnel 15020:15020
+```
 
 ## Cleanup
 
