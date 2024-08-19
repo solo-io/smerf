@@ -14,7 +14,7 @@ valid_types=("app" "loadgen")
 
 # Check if type argument is provided
 if [ -z "$1" ]; then
-  echo "Usage: $0 <type> <replicas>"
+  echo "Usage: $0 <workload_type> <replicas>"
   echo "Supported types are: app, loadgen"
   exit 1
 fi

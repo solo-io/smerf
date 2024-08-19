@@ -6,7 +6,7 @@ set -e
 CLUSTER_TYPE=${CLUSTER_TYPE:-"eks"}
 CLUSTER_NAME=${CLUSTER_NAME:-"$(whoami)-$RANDOM"}
 REGION=${REGION:-"us-west-2"}
-NUM_NODES=${NUM_NODES:-"2"}
+NUM_NODES=${NUM_NODES:-"3"}
 MAX_NUM_NODES=${MAX_NUM_NODES:-"450"} # Max size of a managed node group
 INSTANCE=${INSTANCE:-"m5.2xlarge"}
 DELETE_CLUSTER_ON_FAIL=${DELETE_CLUSTER_ON_FAIL:-"false"}
