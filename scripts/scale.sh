@@ -7,8 +7,6 @@ NUM_NS=${NUM_NS:-"1"}
 # A time unit, e.g. 1s, 2m, 3h, to wait for a deployment rollout to complete.
 ROLLOUT_TIMEOUT=${ROLLOUT_TIMEOUT:-"5m"}
 
-# Supported values for the number of namespaces.
-valid_num_ns=(1 25)
 # Supported types for the script.
 valid_types=("app" "loadgen")
 
@@ -36,9 +34,9 @@ fi
 
 replicas=$2
 
-# Check if NUM_NS is valid
-if [[ ! " ${valid_num_ns[*]} " =~ " $NUM_NS " ]]; then
-  echo "Invalid value for NUM_NS. Supported values are 1 and 25."
+# Validate NUM_NS to ensure it's between 1 and 25
+if [[ "$NUM_NS" -lt 1 || "$NUM_NS" -gt 25 ]]; then
+  echo "Invalid value for NUM_NS. Supported values are between 1 and 25."
   exit 1
 fi
 

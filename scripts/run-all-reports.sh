@@ -2,6 +2,8 @@
 
 set -e
 
+# The number of namespaces used to run the test app or load generators.
+NUM_NS=${NUM_NS:-"1"}
 # Maximum wait time in seconds (60 minutes)
 MAX_TOTAL_WAIT=${MAX_TOTAL_WAIT:-"3600"}
 # Maximum wait time per pod in seconds (15 minutes)
@@ -19,11 +21,9 @@ fi
 
 file_name=$1
 
-# Determine the number of namespaces
-if [[ "$2" == "1" || "$2" == "25" ]]; then
-  num_namespaces="$2"
-else
-  echo "Invalid number of namespaces. Must be 1 or 25."
+# Validate NUM_NS to ensure it's between 1 and 25
+if [[ "$NUM_NS" -lt 1 || "$NUM_NS" -gt 25 ]]; then
+  echo "Invalid value for NUM_NS. Supported values are between 1 and 25."
   exit 1
 fi
 
@@ -70,7 +70,7 @@ done
 script_dir=$(dirname "$(realpath "$0")")
 
 # Run the latency report script
-"$script_dir/latency-report.sh" "$file_name" "$num_namespaces"
+"$script_dir/latency-report.sh" "$file_name" "$NUM_NS"
 if [ $? -ne 0 ]; then
     echo "Failed to generate latency report"
     exit 1

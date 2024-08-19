@@ -1,0 +1,16 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: tier-1-app-a-viewer
+  namespace: ns-$i
+spec:
+  selector:
+    matchLabels:
+      app: tier-1-app-a
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/ns-$i/sa/vegeta1
+        - cluster.local/ns/ns-$i/sa/waypoint

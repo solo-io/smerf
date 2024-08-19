@@ -5,9 +5,7 @@ set -e
 # The number of namespaces to remove the test app or load generators from. 
 NUM_NS=${NUM_NS:-"1"}
 
-# Supported values for the number of namespaces.
-valid_num_ns=(1 25)
-# Supported types for the script.
+# Supported workload types for the script.
 valid_types=("app" "loadgen")
 # Supported policies for app deletion
 valid_policies=("l4" "l7" "waypoint")
@@ -15,22 +13,22 @@ valid_policies=("l4" "l7" "waypoint")
 # Check if type argument is provided
 if [ -z "$1" ]; then
   echo "Usage: $0 <type> [<mesh> <policy>]"
-  echo "Supported types are: app, loadgen"
+  echo "Supported workload types are: app, loadgen"
   exit 1
 fi
 
-# Set the type
+# Set the workload type
 TYPE=$1
 
 # Validate type
 if [[ ! " ${valid_types[*]} " =~ " $TYPE " ]]; then
-  echo "Invalid type: $TYPE. Supported values are 'app' and 'loadgen'."
+  echo "Invalid workload type: $TYPE. Supported values are 'app' and 'loadgen'."
   exit 1
 fi
 
-# Check if NUM_NS is valid
-if [[ ! " ${valid_num_ns[*]} " =~ " $NUM_NS " ]]; then
-  echo "Invalid value for NUM_NS. Supported values are 1 and 25."
+# Validate NUM_NS to ensure it's between 1 and 25
+if [[ "$NUM_NS" -lt 1 || "$NUM_NS" -gt 25 ]]; then
+  echo "Invalid value for NUM_NS. Supported values are between 1 and 25."
   exit 1
 fi
 
@@ -63,21 +61,41 @@ if [[ "$TYPE" == "app" ]]; then
     done
   fi
 
+  # Remove the ambient labels from the specified namespaces.
+  if [[ "$MESH" == "ambient" && -z "$UPDATE" ]]; then
+    for i in $(seq 1 $NUM_NS); do
+      NAMESPACE="ns-$i"
+      echo "Removing ambient labels from $NAMESPACE..."
+      kubectl label namespace $NAMESPACE istio.io/dataplane-mode- istio.io/use-waypoint- --overwrite || {
+        echo "Failed to remove labels from namespace $NAMESPACE"
+        exit 1
+      }
+    done
+    exit 0
+  fi
+
   # Construct the correct manifest path based on mesh and policy
-  MANIFEST_PATH="manifests/app/$NUM_NS/$MESH"
+  MANIFEST_PATH="manifests/app/$MESH"
   if [[ "$MESH" == "ambient" ]]; then
-    if [[ " ${UPDATES[*]} " =~ "l4" || " ${UPDATES[*]} " =~ "l7" ]]; then
+    if [[ " ${UPDATE[*]} " =~ "l4" ]]; then
       MANIFEST_PATH="$MANIFEST_PATH/l4-policy"
-    elif [[ " ${UPDATES[*]} " =~ "waypoint" ]]; then
+    elif [[ " ${UPDATE[*]} " =~ "l7" ]]; then
+      MANIFEST_PATH="$MANIFEST_PATH/l7-policy"
+    elif [[ " ${UPDATE[*]} " =~ "waypoint" ]]; then
       MANIFEST_PATH="$MANIFEST_PATH/waypoints"
     fi
+  else
+      MANIFEST_PATH="manifests/app/$MESH/app.yaml"
   fi
 
   # Delete the manifest
-  kubectl delete -k $MANIFEST_PATH || {
-    echo "Failed to delete Kubernetes resources for $MESH mesh with policy $UPDATE: ${PIPESTATUS[0]}"
-    exit 1
-  }
+  for i in $(seq 1 $NUM_NS); do
+    sed "s/\$i/$i/g" $MANIFEST_PATH | kubectl delete -f - 2>&1 | grep -v "not found" || {
+      echo "Failed to delete Kubernetes resources for namespace ns-$i: ${PIPESTATUS[0]}"
+      # Continue to the next iteration even if there are "not found" errors
+    }
+  done
+
 
   # Determine what to echo based on whether a policy was provided
   if [ -z "$UPDATE" ]; then
@@ -96,10 +114,12 @@ if [[ "$TYPE" == "app" ]]; then
 
 elif [[ "$TYPE" == "loadgen" ]]; then
   # Delete the load generators
-  kubectl delete -k manifests/loadgen/$NUM_NS/base || {
-    echo "Failed to delete Kubernetes resources: ${PIPESTATUS[0]}"
-    exit 1
-  }
+  for i in $(seq 1 $NUM_NS); do
+    sed "s/\$i/$i/g" manifests/loadgen/base/loadgen.yaml | kubectl delete -f - 2>&1 | grep -v "not found" || {
+      echo "Failed to delete load generator resources for namespace ns-$i: ${PIPESTATUS[0]}"
+      # Continue to the next iteration even if there are "not found" errors
+    }
+  done
 
   if [ "$NUM_NS" -eq 1 ]; then
     echo "Load generators removed from $NUM_NS namespace."

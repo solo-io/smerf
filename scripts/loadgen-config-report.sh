@@ -34,7 +34,7 @@ namespaces=$(kubectl get namespaces -o jsonpath="{.items[*].metadata.name}")
 # Loop through each namespace
 for namespace in $namespaces; do
     # Get the list of vegeta1 pods in the namespace
-    pods=$(kubectl get pods -n $namespace -l app=vegeta1 -o jsonpath="{.items[*].metadata.name}")
+    pods=$(kubectl get pods -n $namespace -l kind=vegeta -o jsonpath="{.items[*].metadata.name}")
     
     for pod in $pods; do
         # Get the node the pod is running on

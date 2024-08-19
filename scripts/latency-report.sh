@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# The number of namespaces used to run the test app or load generators.
+NUM_NS=${NUM_NS:-"1"}
+
 # Check if file_name argument is provided
 if [ -z "$1" ]; then
   echo "Error: file_name argument is required"
@@ -32,18 +35,16 @@ mkdir -p $output_dir
 # Start code block
 echo '```' >> "$output_file"
 
-# Determine the number of namespaces
-if [[ "$2" == "1" || "$2" == "25" ]]; then
-  num_namespaces="$2"
-else
-  echo "Invalid number of namespaces. Must be 1 or 25."
+# Validate NUM_NS to ensure it's between 1 and 25
+if [[ "$NUM_NS" -lt 1 || "$NUM_NS" -gt 25 ]]; then
+  echo "Invalid value for NUM_NS. Supported values are between 1 and 25."
   exit 1
 fi
 
 # Define the range of namespaces
 start_namespace=1
-# Adjust end based on num_namespaces
-end_namespace=$((start_namespace + num_namespaces - 1))
+# Adjust end based on NUM_NS
+end_namespace=$((start_namespace + $NUM_NS - 1))
 
 # Define an array of namespaces from start_namespace to end_namespace
 namespaces=()
