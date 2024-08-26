@@ -13,7 +13,7 @@ metadata:
   name: vegeta1
   namespace: ns-$i
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   selector:
     matchLabels:
       app: vegeta1
@@ -49,9 +49,9 @@ spec:
         - name: GAMMA_APP_URL
           value: "http://tier-1-app.ns-$i.svc.cluster.local:8080/v1"
         - name: REQUESTS_PER_SECOND
-          value: "150"
+          value: "$RPS"
         - name: DURATION
-          value: "10m"
+          value: "$DURATION"
         - name: CONNECTIONS
           value: "100"
         - name: MAX_CONNECTIONS
@@ -79,7 +79,7 @@ metadata:
   name: vegeta2
   namespace: ns-$i
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   selector:
     matchLabels:
       app: vegeta2
@@ -115,9 +115,9 @@ spec:
         - name: GAMMA_APP_URL
           value: "http://tier-1-app.ns-$i.svc.cluster.local:8080/v2"
         - name: REQUESTS_PER_SECOND
-          value: "150"
+          value: "$RPS"
         - name: DURATION
-          value: "10m"
+          value: "$DURATION"
         - name: CONNECTIONS
           value: "100"
         - name: MAX_CONNECTIONS

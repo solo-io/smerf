@@ -60,6 +60,26 @@ app_rollout_status() {
       exit 1
     }
   done
+  if [ "$replicas" -eq 0 ]; then
+      # Wait until all pods to no longer exist
+      echo "Waiting for all pods with label 'kind=3-tier' to be terminated..."
+      while kubectl get pods -l kind=3-tier --no-headers | grep -q .; do
+          echo "Pods with label 'kind=3-tier' are still terminating..."
+          sleep 2
+      done
+      echo "All pods with label 'kind=3-tier' have been terminated."
+  else
+      # Wait for all pods to be ready
+      kubectl wait --for=condition=ready pod -l kind=3-tier --timeout=300s
+
+      # Ensure all pods are ready before proceeding
+      if kubectl get pods -l kind=3-tier --field-selector=status.phase!=Running | grep -q 'Pending\|Failed'; then
+          echo "Some pods are not ready. Exiting."
+          exit 1
+      fi
+
+      echo "All pods are ready."
+  fi
 }
 
 # Function to handle rollout status for the load generators
@@ -71,12 +91,31 @@ loadgen_rollout_status() {
       exit 1
     }
   done
+  if [ "$replicas" -eq 0 ]; then
+      # Wait until all pods to no longer exist
+      echo "Waiting for all pods with label 'kind=vegeta' to be terminated..."
+      while kubectl get pods -n $namespace -l kind=vegeta --no-headers | grep -q .; do
+          echo "Pods with label 'kind=vegeta' are still terminating..."
+          sleep 2
+      done
+      echo "All pods with label 'kind=vegeta' have been terminated."
+  else
+      # Wait for all pods to be ready
+      kubectl wait --for=condition=ready pod -l kind=vegeta -n $namespace --timeout=300s
+
+      # Ensure all pods are ready before proceeding
+      if kubectl get pods -n $namespace -l kind=vegeta --field-selector=status.phase!=Running | grep -q 'Pending\|Failed'; then
+          echo "Some pods are not ready. Exiting."
+          exit 1
+      fi
+
+      echo "All pods are ready."
+  fi
 }
 
 # Scale deployments based on the type
 if [[ "$TYPE" == "app" ]]; then
   for i in $(seq 1 $NUM_NS); do
-    app_rollout_status "ns-$i"
     kubectl scale deploy/tier-1-app-a -n ns-$i --replicas=$replicas --timeout=$ROLLOUT_TIMEOUT
     kubectl scale deploy/tier-1-app-b -n ns-$i --replicas=$replicas --timeout=$ROLLOUT_TIMEOUT
     kubectl scale deploy/tier-2-app-a -n ns-$i --replicas=$replicas --timeout=$ROLLOUT_TIMEOUT
@@ -85,6 +124,7 @@ if [[ "$TYPE" == "app" ]]; then
     kubectl scale deploy/tier-2-app-d -n ns-$i --replicas=$replicas --timeout=$ROLLOUT_TIMEOUT
     kubectl scale deploy/tier-3-app-a -n ns-$i --replicas=$replicas --timeout=$ROLLOUT_TIMEOUT
     kubectl scale deploy/tier-3-app-b -n ns-$i --replicas=$replicas --timeout=$ROLLOUT_TIMEOUT
+    app_rollout_status "ns-$i"
   done
   if [ "$NUM_NS" -eq 1 ]; then
     echo "Test app has been scaled to $replicas in $NUM_NS namespace."
@@ -93,9 +133,9 @@ if [[ "$TYPE" == "app" ]]; then
   fi
 elif [[ "$TYPE" == "loadgen" ]]; then
   for i in $(seq 1 $NUM_NS); do
-    loadgen_rollout_status "ns-$i"
     kubectl scale deploy/vegeta1 -n ns-$i --replicas=$replicas --timeout=$ROLLOUT_TIMEOUT
     kubectl scale deploy/vegeta2 -n ns-$i --replicas=$replicas --timeout=$ROLLOUT_TIMEOUT
+    loadgen_rollout_status "ns-$i"
   done
   if [ "$NUM_NS" -eq 1 ]; then
     echo "Load generators have been scaled to $replicas in $NUM_NS namespace."

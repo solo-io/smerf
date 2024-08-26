@@ -6,6 +6,12 @@ set -e
 NUM_NS=${NUM_NS:-"1"}
 # A time unit, e.g. 1s, 2m, 3h, to wait for a deployment rollout to complete.
 ROLLOUT_TIMEOUT=${ROLLOUT_TIMEOUT:-"5m"}
+# The number of deployment replicas to use for the specified workload_type.
+REPLICAS=${REPLICAS:-1}
+# The number of requests per second to send when workload_type is loadgen.
+RPS=${RPS:-"150"}
+# The duration in time to generate traffic load when workload_type is loadgen.
+DURATION=${DURATION:-"10m"}
 
 # Supported workload types for the script.
 valid_types=("app" "loadgen")
@@ -87,15 +93,20 @@ all_loadgen_rollout_status_and_rollback() {
 
 # Apply the appropriate manifests based on the workload type
 if [[ "$TYPE" == "app" ]]; then
+  # Update and apply the loadgen manifest
+  MANIFEST="manifests/app/base/app.yaml"
+  echo "Applying $MANIFEST manifest with: replicas=$REPLICAS"
   for i in $(seq 1 $NUM_NS); do
-    # Substitute $i with the namespace number using sed and apply the manifest
-    sed "s/\$i/$i/g" manifests/app/base/app.yaml | kubectl apply -f - || {
-      echo "Failed to apply Kubernetes resources for namespace ns-$i: ${PIPESTATUS[0]}"
-      sed "s/\$i/$i/g" manifests/app/base/app.yaml | kubectl delete -f - || {
+      # Update manifest variables
+      sed -e "s/\$i/$i/g" \
+          -e "s/\$REPLICAS/$REPLICAS/g" \
+          $MANIFEST | kubectl apply -f - || {
+        echo "Failed to apply Kubernetes resources for namespace ns-$i: ${PIPESTATUS[0]}"
+        sed "s/\$i/$i/g" manifests/app/base/app.yaml | kubectl delete -f - || {
         echo "Failed to delete Kubernetes resources for namespace ns-$i: ${PIPESTATUS[0]}"
       }
-      exit 1
-    }
+        exit 1
+      }
   done
   # Check rollout status and rollback for all namespaces
   all_app_rollout_status_and_rollback
@@ -105,15 +116,22 @@ if [[ "$TYPE" == "app" ]]; then
     echo "Test app is running in $NUM_NS namespaces."
   fi
 elif [[ "$TYPE" == "loadgen" ]]; then
+  # Update and apply the loadgen manifest
+  MANIFEST="manifests/loadgen/base/loadgen.yaml"
+  echo "Applying $MANIFEST manifest with: replicas=$REPLICAS, rps=$RPS, duration=$DURATION"
   for i in $(seq 1 $NUM_NS); do
-    # Substitute $i with the namespace number using sed and apply the manifest
-    sed "s/\$i/$i/g" manifests/loadgen/base/loadgen.yaml | kubectl apply -f - || {
-      echo "Failed to apply Kubernetes resources for namespace ns-$i: ${PIPESTATUS[0]}"
-      sed "s/\$i/$i/g" manifests/loadgen/base/loadgen.yaml | kubectl delete -f - || {
+      # Update manifest variables
+      sed -e "s/\$i/$i/g" \
+          -e "s/\$DURATION/$DURATION/g" \
+          -e "s/\$RPS/$RPS/g" \
+          -e "s/\$REPLICAS/$REPLICAS/g" \
+          manifests/loadgen/base/loadgen.yaml | kubectl apply -f - || {
+        echo "Failed to apply Kubernetes resources for namespace ns-$i: ${PIPESTATUS[0]}"
+        sed "s/\$i/$i/g" manifests/loadgen/base/loadgen.yaml | kubectl delete -f - || {
         echo "Failed to delete Kubernetes resources for namespace ns-$i: ${PIPESTATUS[0]}"
       }
-      exit 1
-    }
+        exit 1
+      }
   done
   # Check rollout status and rollback for all namespaces
   all_loadgen_rollout_status_and_rollback

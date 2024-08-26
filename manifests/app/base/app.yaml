@@ -11,7 +11,7 @@ metadata:
   namespace: ns-$i
   labels:
     app: tier-1-app-a
-    tier: "1" 
+    tier: "1"
 ---
 apiVersion: v1
 kind: Service
@@ -38,8 +38,9 @@ metadata:
   labels:
     app: tier-1-app-a
     tier: "1"
+    kind: 3-tier
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   strategy:
     type: Recreate
   selector:
@@ -50,6 +51,7 @@ spec:
       labels:
         app: tier-1-app-a
         tier: "1"
+        kind: 3-tier
     spec:
       affinity:
         podAntiAffinity:
@@ -153,8 +155,9 @@ metadata:
   labels:
     app: tier-1-app-b
     tier: "1"
+    kind: 3-tier
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   strategy:
     type: Recreate
   selector:
@@ -165,6 +168,7 @@ spec:
       labels:
         app: tier-1-app-b
         tier: "1"
+        kind: 3-tier
     spec:
       affinity:
         podAntiAffinity:
@@ -268,8 +272,9 @@ metadata:
   labels:
     app: tier-2-app-a
     tier: "2"
+    kind: 3-tier
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   strategy:
     type: Recreate
   selector:
@@ -280,6 +285,7 @@ spec:
       labels:
         app: tier-2-app-a
         tier: "2"
+        kind: 3-tier
     spec:
       affinity:
         podAntiAffinity:
@@ -383,8 +389,9 @@ metadata:
   labels:
     app: tier-2-app-b
     tier: "2"
+    kind: 3-tier
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   strategy:
     type: Recreate
   selector:
@@ -395,6 +402,7 @@ spec:
       labels:
         app: tier-2-app-b
         tier: "2"
+        kind: 3-tier
     spec:
       affinity:
         podAntiAffinity:
@@ -498,8 +506,9 @@ metadata:
   labels:
     app: tier-2-app-c
     tier: "2"
+    kind: 3-tier
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   strategy:
     type: Recreate
   selector:
@@ -510,6 +519,7 @@ spec:
       labels:
         app: tier-2-app-c
         tier: "2"
+        kind: 3-tier
     spec:
       affinity:
         podAntiAffinity:
@@ -613,8 +623,9 @@ metadata:
   labels:
     app: tier-2-app-d
     tier: "2"
+    kind: 3-tier
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   strategy:
     type: Recreate
   selector:
@@ -625,6 +636,7 @@ spec:
       labels:
         app: tier-2-app-d
         tier: "2"
+        kind: 3-tier
     spec:
       affinity:
         podAntiAffinity:
@@ -728,8 +740,9 @@ metadata:
   labels:
     app: tier-3-app-a
     tier: "2"
+    kind: 3-tier
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   strategy:
     type: Recreate
   selector:
@@ -740,6 +753,7 @@ spec:
       labels:
         app: tier-3-app-a
         tier: "3"
+        kind: 3-tier
     spec:
       affinity:
         podAntiAffinity:
@@ -843,8 +857,9 @@ metadata:
   labels:
     app: tier-3-app-b
     tier: "2"
+    kind: 3-tier
 spec:
-  replicas: 1
+  replicas: $REPLICAS
   strategy:
     type: Recreate
   selector:
@@ -855,6 +870,7 @@ spec:
       labels:
         app: tier-3-app-b
         tier: "3"
+        kind: 3-tier
     spec:
       affinity:
         podAntiAffinity:

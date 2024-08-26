@@ -3,14 +3,17 @@
 - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Prerequisites](#prerequisites)
-  - [Typical Workflow](#typical-workflow)
+  - [Quick Start](#quick-start)
   - [Create a Cluster](#create-a-cluster)
   - [Run the Test App or Load Generators](#run-the-test-app-or-load-generators)
   - [Scale the Test App or Load Generators](#scale-the-test-app-or-load-generators)
   - [Install Istio](#install-istio)
   - [Update the Test App](#update-the-test-app)
+  - [Update the Load Generators](#update-the-load-generators)
+  - [Test Reporting](#test-reporting)
   - [Manual Operations](#manual-operations)
-    - [Cluster Node Pool Resizing](#cluster-node-pool-resizing)
+    - [EKS Node Pool Resizing](#eks-node-pool-resizing)
+    - [Manual Verification](#manual-verification)
     - [Manual Testing](#manual-testing)
     - [Istio](#istio)
   - [Cleanup](#cleanup)
@@ -28,97 +31,45 @@ Ensure the following tools are installed:
 - [eksctl](https://eksctl.io/): Required for managing EKS clusters.
 - [helm](https://helm.sh/docs/intro/install/): A package manager for Kubernetes.
 
-## Typical Workflow
+## Quick Start
 
-A typical workflow is:
+Getting started with mesh-perf is as simple as 1 or 2 steps.
 
-1. Create a Kubernetes cluster:
+1. If you don't have a Kubernetes cluster, [create one](#create-a-cluster).
 
-   ```scripts/create-perf-cluster.sh```
+2. Use the `./scripts/run-all.sh` to run the e2e performance benchmark tests, e.g. run the test app and
+   load generators, install the service mesh, run test reports, etc.
 
-2. Run the test app:
+__Environment Variables:__
 
-   ```./scripts/create.sh app```
+- `NUM_NS`: The number of namespaces to run the test app, defaults to 1 namespace with a maximum of 25.
+- `REPLICAS`: The number of replicas to run for the test app, the default is 1.
+- `RPS`: The number of requests per second for the load generator to generate, the default is 150.
+- `DURATION`: The amount of time to generate traffic, the default is 10m.
 
-3. Run the load generators:
+__Examples:__
 
-   ```./scripts/create.sh loadgen```
-
-4. Create performance baseline reports:
-
-   ```./scripts/run-all-reports.sh <unique_report_name>```
-
-5. Scale down the load generators:
-
-   ```./scripts/scale.sh loadgen 0```
-
-6. Install Istio using ambient mode:
-
-   ```./scripts/install-istio.sh ambient```
-
-7. Add the test app to the Istio ambient mesh:
-
-   ```./scripts/update.sh app ambient```
-
-8. Scale up the load generators:
-
-   ```./scripts/scale.sh loadgen 1```
-
-9. Create ambient mTLS performance reports:
-
-   ```./scripts/run-all-reports.sh <unique_report_name>```
-
-10. Scale down the load generators:
-
-    ```./scripts/scale.sh loadgen 0```
-
-11. Apply Istio L4 auth policies:
-
-    ```./scripts/update.sh app ambient l4```
-
-12. Scale up the load generators:
-
-    ```./scripts/scale.sh loadgen 1```
-
-13. Create ambient mTLS+L4 Auth performance reports:
-
-    ```./scripts/run-all-reports.sh <unique_report_name>```
-
-14. Scale down the load generators:
-
-    ```./scripts/scale.sh loadgen 0```
-
-15. Create an ambient waypoint per namespace:
-
-    ```./scripts/update.sh app ambient waypoint```
-
-16. Apply Istio L7 auth policies:
-
-    ```./scripts/update.sh app ambient l7```
-
-17. Create ambient waypoint+L7 Auth performance reports:
-
-    ```./scripts/run-all-reports.sh <unique_report_name>```
-
-18. Scale down the load generators, uninstall Istio, or delete the cluster.
+- `NUM_NS=2 REPLICAS=3 RPS=250 DURATION=5m ./scripts/run-all.sh` runs the performance benchmark tests with the test app
+  running in 2 namespaces, each with 3 replicas and the load generator sending 250 requests per second for 5 minutes.
 
 ## Create a Cluster
 
-The `scripts/create-perf-cluster.sh` script automates the creation of a Kubernetes cluster,
+The `scripts/create-cluster.sh` script automates the creation of a Kubernetes cluster,
 defaulting to Amazon EKS if `CLUSTER_TYPE` is unspecified. It also handles node labeling/tainting,
 and optional add-on installations, e.g. Kubernetes metrics-server.
 
 __Environment Variables:__
 
+- `CLUSTER_TYPE`: The type of Kubernetes cluster to create. Defaults to `eks` and is the only supported option.
 - `AWS_ACCESS_KEY_ID`: Required for EKS.
 - `AWS_SECRET_ACCESS_KEY`: Required for EKS.
 - `AWS_SESSION_TOKEN`: Required for EKS.
-- `CLUSTER_NAME`: Default is ${USER}-$RANDOM.
+- `CLUSTER_NAME`: The name of the cluster, default is ${USER}-$RANDOM.
 - `REGION`: AWS region, default is us-west-2.
 - `NUM_NODES`: Number of nodes, default is 3.
+- `NUM_LOAD_NODES`: Number of nodes dedicated to running load generators, default is 1.
 - `INSTANCE`: Instance type, defaults to AWS EC2 m5.2xlarge.
 - `CILIUM_NODE_TAINT`: Taints nodes to ensure application pods are not scheduled until Cilium is deployed, defaults to false.
-- `NUM_LOAD_NODES`: Number of nodes to label as load generators, default is 1.
 - `ADDONS`: A comma-separated list of add-ons, defaults to metrics-server.
 - `DELETE_CLUSTER_ON_FAIL`: Deletes the cluster on failure, default is true.
 
@@ -134,8 +85,11 @@ __Arguments:__
 
 __Environment Variables:__
 
-- `NUM_NS`: The number of namespaced app instances, defaults to 1.
+- `NUM_NS`: The number of namespaced app instances, defaults to 1 with a maximum of 25.
+- `REPLICAS`: The number of replicas to use for the specified `<workload_type>`, default is 1.
 - `ROLLOUT_TIMEOUT`: The amount of time to wait for each app deployment to rollout, defaults to 5m for 5-minutes.
+- `RPS`: The number of requests per second to generate when `workload_type=loadgen`, default to 150.
+- `DURATION`: The amount of time to generate traffic when `workload_type=loadgen`, default to 10m.
 
 ## Scale the Test App or Load Generators
 
@@ -162,7 +116,7 @@ __Arguments:__
 
 __Environment Variables:__
 
-- `NUM_NS`: The number of namespaced vegeta instances, defaults to 1.
+- `NUM_NS`: The number of namespaced vegeta instances, defaults to 1 with a maximum of 25.
 - `ROLLOUT_TIMEOUT`: The amount of time to wait for each vegeta deployment to rollout, defaults to 5m for 5-minutes.
 
 - `ISTIO_VERSION`: The version of Istio to install. Supported options are "1.22.1" (default) and "1.22.1-patch0-solo".
@@ -172,17 +126,16 @@ and "us-docker.pkg.dev/gloo-mesh/istio-a9ee4fe9f69a".
 
 ## Update the Test App
 
-The `scripts/update.sh <workload_type> [<mesh_type> <update_type>]` script updates the 3-tier test app for the specified `<mesh_type>`.
+The `scripts/update-app.sh <mesh_type> <update_type>` script updates the 3-tier test app for the specified `<mesh_type>`.
 
-Examples:
+__Examples:__
 
-- `scripts/update.sh app ambient` to run the 3-tier test app on ambient mesh. __Note:__ Requires a running Istio control plane
+- `scripts/update-app.sh ambient` to run the 3-tier test app on ambient mesh. __Note:__ Requires a running Istio control plane
   configured for ambient, e.g . `scripts/install-istio.sh ambient`.
-- `scripts/update.sh app ambient l4` to apply L4 authn policies to the 3-tier test app running on ambient mesh.
+- `scripts/update-app.sh ambient l4` to apply L4 authn policies to the 3-tier test app running on ambient mesh.
 
 __Arguments:__
 
-- `workload_type`: The type of workload to scale, supported options are `app` for the 3-tier test app.
 - `mesh_type`: The type of mesh to associate with the workload.
 - `update_type`: The type of update to apply for the specified `<mesh_type>`. Supported options for `mesh_type=ambient` are `l4`
 to apply Istio L4 authorization policies, `l7` to apply Istio L7 authorization policies, and `waypoint` to apply waypoint proxies
@@ -190,13 +143,41 @@ to the 3-tier test app instances.
 
 __Environment Variables:__
 
+- `NUM_NS`: The number of namespaced 3-tier test app or vegeta load generators instances, defaults to 1 with a maximum of 25.
+- `REPLICAS`: The number of replicas to use for the test app, default is 1.
+
+## Update the Load Generators
+
+The `scripts/update-loadgen.sh` script updates the load generators with the specified options.
+
+__Examples:__
+
+- `RPS=250 DURATION=1m ./scripts/update-loadgen.sh` updates load generators to use 250 requests per second (RPS) for 1-minute.
+
+__Environment Variables:__
+
 - `NUM_NS`: The number of namespaced 3-tier test app or vegeta load generators instances, defaults to 1.
+- `RPS`: The number of requests per second for the load generator to send.
+- `DURATION`: The amount of time to generate traffic.
+
+## Test Reporting
+
+The `scripts/run-all-reports.sh <name>` script automates the reporting of test results.
+
+__Arguments:__
+
+`<name>`: the name applied to the test report filenames stored in the `out` directory.
+
+__Environment Variables:__
+
+- `NUM_NS`: The number of namespaced 3-tier test app or vegeta load generators instances, defaults to 1 with a maximum of 25.
+- `MAX_TOTAL_WAIT`: The maximum wait time in seconds to wait for generating reports, default is 3600 seconds (60 minutes.)
 
 ## Manual Operations
 
 The following are optional manual operations for inspecting the test environment.
 
-### Cluster Node Pool Resizing
+### EKS Node Pool Resizing
 
 If you want to scale up/down the `ng-1` node group:
 
@@ -207,10 +188,36 @@ eksctl scale nodegroup --cluster ${CLUSTER_NAME} --nodes ${NUM_NODES} --name ng-
 Check the status of the scaling:
 
 ```bash
-eksctl get nodegroup --cluster ${CLUSTER_NAME} --name ng-1
+eksctl get nodegroup --cluster ${CLUSTER_NAME} --region ${REGION} --name ng-1
+```
+
+To see how many nodes are ready:
+
+```bash
+kubectl get nodes | grep -c 'Ready'
+```
+
+### Manual Verification
+
+Check the status of test app pods:
+
+```bash
+kubectl get po -A | grep tier
+```
+
+Check the status of vegeta pods:
+
+```bash
+kubectl get po -A | grep vegeta
 ```
 
 ### Manual Testing
+
+Check whether vegeta has posted a load test (default 10-minutes):
+
+```bash
+kubectl logs -l app=vegeta1 -n ns-1
+```
 
 Exec into a vegeta load generator to run your own test:
 
@@ -227,13 +234,13 @@ echo "GET http://tier-1-app-a.ns-1.svc.cluster.local:8080" | vegeta attack -dns-
 ### Istio
 
 Port-forward the waypoint (Envoy) admin endpoint to review configuration, stats, etc. This is useful to confirm traffic
-from the load generators is going through waypoints.
+from the load generators is going through waypoints:
 
 ```bash
 kubectl port-forward deploy/waypoint 15000:15000 -n <namespace>
 ```
 
-Port-forward the ztunnel admin endpoint to review configuration, stats, etc.
+Port-forward the ztunnel admin endpoint to review configuration, stats, etc:
 
 ```bash
 kubectl port-forward -n istio-system ds/ztunnel 15020:15020
@@ -253,4 +260,4 @@ __Arguments:__
 
 __Environment Variables:__
 
-`NUM_NS`: The number of namespaced 3-tier test app or vegeta load generators instances, defaults to 1.
+`NUM_NS`: The number of namespaced 3-tier test app or vegeta load generators instances, defaults to 1 with a maximum of 25.

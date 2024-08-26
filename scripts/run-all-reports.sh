@@ -11,7 +11,7 @@ MAX_POD_WAIT=${MAX_POD_WAIT:-"900"}
 # Interval between pod checks in seconds (5 seconds)
 POD_CHECK_INTERVAL=${POD_CHECK_INTERVAL:-"5"}
 # Label for pod selection
-LABEL=${LABEL:-"vegeta1"}
+LABEL=${LABEL:-"kind=vegeta"}
 
 # Check if file_name argument is provided
 if [ -z "$1" ]; then
@@ -30,7 +30,7 @@ fi
 # Function to check if logs contain "Requests"
 function check_logs() {
   local namespace=$1
-  local logs=$(kubectl logs -l app=$LABEL -n $namespace 2>/dev/null | head -n 100)
+  local logs=$(kubectl logs -l $LABEL -n $namespace 2>/dev/null | head -n 100)
   if [[ "$logs" =~ "Requests" ]]; then
     return 0  # Success
   else

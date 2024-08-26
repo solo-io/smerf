@@ -12,7 +12,7 @@ valid_policies=("l4" "l7" "waypoint")
 
 # Check if type argument is provided
 if [ -z "$1" ]; then
-  echo "Usage: $0 <type> [<mesh> <policy>]"
+  echo "Usage: $0 <workload_type> [<mesh_type> <update_type>]"
   echo "Supported workload types are: app, loadgen"
   exit 1
 fi
@@ -84,16 +84,18 @@ if [[ "$TYPE" == "app" ]]; then
     elif [[ " ${UPDATE[*]} " =~ "waypoint" ]]; then
       MANIFEST_PATH="$MANIFEST_PATH/waypoints"
     fi
-  else
-      MANIFEST_PATH="manifests/app/$MESH/app.yaml"
   fi
 
   # Delete the manifest
   for i in $(seq 1 $NUM_NS); do
-    sed "s/\$i/$i/g" $MANIFEST_PATH | kubectl delete -f - 2>&1 | grep -v "not found" || {
-      echo "Failed to delete Kubernetes resources for namespace ns-$i: ${PIPESTATUS[0]}"
-      # Continue to the next iteration even if there are "not found" errors
-    }
+    for manifest in "$MANIFEST_PATH"/*; do
+      if [[ -f "$manifest" ]]; then
+        sed "s/\$i/$i/g" "$manifest" | kubectl delete -f - || {
+          echo "Failed to delete Kubernetes resources for manifest $manifest: ${PIPESTATUS[0]}"
+          exit 1
+        }
+      fi
+    done
   done
 
 
