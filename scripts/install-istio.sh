@@ -20,7 +20,7 @@ fi
 
 profile=$1
 
-# Supportedinstall profile values.
+# Supported install profile values.
 valid_profiles=("ambient" "sidecar")
 
 # Check if NUM_NS is valid
@@ -101,7 +101,7 @@ else
   cat << EOF > istiod-config.yaml
 global:
   hub: $ISTIO_REPO
-  tag: $ISTIO_IMAGE
+  tag: $ISTIO_VERSION
 meshConfig:
   accessLogFile: /dev/stdout
   enableAutoMtls: true
@@ -128,7 +128,7 @@ helm upgrade --install istiod istio/istiod \
 # Wait for the istiod deployment rollout to complete
 deploy_rollout_status "istiod" "istio-system"
 
-# TODO: Update the sidecar injector configmap for waypoint anti-affinity.
+# TODO: Update the sidecar injector configmap for ambient waypoint anti-affinity.
 
 # Create the ztunnel config file
 if [[ "$profile" == "ambient" ]]; then
@@ -151,7 +151,5 @@ EOF
   # Wait for the ztunnel daemonset rollout to complete
   ds_rollout_status "ztunnel" "istio-system"
 fi
-
-# TODO: Add support for sidecar.
 
 echo "Istio successfully installed!"

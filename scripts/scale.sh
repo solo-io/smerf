@@ -63,21 +63,19 @@ app_rollout_status() {
   if [ "$replicas" -eq 0 ]; then
       # Wait until all pods to no longer exist
       echo "Waiting for all pods with label 'kind=3-tier' to be terminated..."
-      while kubectl get pods -l kind=3-tier --no-headers | grep -q .; do
-          echo "Pods with label 'kind=3-tier' are still terminating..."
+      while kubectl get pods -n $namespace -l kind=3-tier --no-headers | grep -q .; do
+          echo "Pods with in namespace $namespace with label 'kind=3-tier' are still terminating..."
           sleep 2
       done
-      echo "All pods with label 'kind=3-tier' have been terminated."
+      echo "All pods in namespace $namespace with label 'kind=3-tier' have been terminated."
   else
       # Wait for all pods to be ready
-      kubectl wait --for=condition=ready pod -l kind=3-tier --timeout=300s
-
+      kubectl wait --for=condition=ready -n $namespace pod -l kind=3-tier --timeout=300s
       # Ensure all pods are ready before proceeding
-      if kubectl get pods -l kind=3-tier --field-selector=status.phase!=Running | grep -q 'Pending\|Failed'; then
-          echo "Some pods are not ready. Exiting."
+      if kubectl get pods -n $namespace -l kind=3-tier --field-selector=status.phase!=Running | grep -q 'Pending\|Failed'; then
+          echo "Some pods in namespace $namespace are not ready. Exiting."
           exit 1
       fi
-
       echo "All pods are ready."
   fi
 }
@@ -101,14 +99,12 @@ loadgen_rollout_status() {
       echo "All pods with label 'kind=vegeta' have been terminated."
   else
       # Wait for all pods to be ready
-      kubectl wait --for=condition=ready pod -l kind=vegeta -n $namespace --timeout=300s
-
+      kubectl wait --for=condition=ready pod -n $namespace -l kind=vegeta  --timeout=300s
       # Ensure all pods are ready before proceeding
       if kubectl get pods -n $namespace -l kind=vegeta --field-selector=status.phase!=Running | grep -q 'Pending\|Failed'; then
           echo "Some pods are not ready. Exiting."
           exit 1
       fi
-
       echo "All pods are ready."
   fi
 }

@@ -36,8 +36,6 @@ if [[ "$profile" == "ambient" ]]; then
   helm uninstall istio-cni -n istio-system
 fi
 
-# TODO: Add sidecar support.
-
 # Uninstall Istiod
 helm uninstall istiod -n istio-system
 
@@ -54,5 +52,10 @@ echo "Gateway API CRDs deleted."
 kubectl delete ns/istio-system
 
 echo "istio-system namespace deleted."
+
+# Remove the configuration files
+rm -rf istio-cni-config.yaml istio-ztunnel-config.yaml istiod-config.yaml
+
+echo "Removed Istio configuration files."
 
 echo "Istio successfully uninstalled!"

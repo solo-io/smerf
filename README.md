@@ -21,7 +21,7 @@
 
 ## Introduction
 
-Mesh-perf provides tools for performance benchmark testing of service mesh implementations.
+Smerf provides tools for performance benchmark testing of service mesh implementations.
 
 ## Prerequisites
 
@@ -33,12 +33,12 @@ Ensure the following tools are installed:
 
 ## Quick Start
 
-Getting started with mesh-perf is as simple as 1 or 2 steps.
+Getting started with smerf is as simple as 1 or 2 steps.
 
 1. If you don't have a Kubernetes cluster, [create one](#create-a-cluster).
 
-2. Use the `./scripts/run-all.sh` to run the e2e performance benchmark tests, e.g. run the test app and
-   load generators, install the service mesh, run test reports, etc.
+2. Use the `./scripts/run-all.sh` to run the e2e performance benchmark tests, e.g. install the service mesh,
+   run the test app and load generators, generate reports, etc.
 
 __Environment Variables:__
 
@@ -46,11 +46,17 @@ __Environment Variables:__
 - `REPLICAS`: The number of replicas to run for the test app, the default is 1.
 - `RPS`: The number of requests per second for the load generator to generate, the default is 150.
 - `DURATION`: The amount of time to generate traffic, the default is 10m.
+- `RUN_BASELINE`: Run the baseline benchmark test, e.g. no service mesh, the default is true.
+- `PROFILE`: The installation profile to use for the service mesh. Supported options are 'ambient' and 'sidecar' for an Istio service mesh.
+- `INSTALL_MESH`: Whether to install the service mesh. If true, the service mesh implementation will be installed based on the configured $PROFILE. Currently, Istio is the only supported service mesh.
 
 __Examples:__
 
 - `NUM_NS=2 REPLICAS=3 RPS=250 DURATION=5m ./scripts/run-all.sh` runs the performance benchmark tests with the test app
   running in 2 namespaces, each with 3 replicas and the load generator sending 250 requests per second for 5 minutes.
+- `PROFILE=sidecar RUN_BASELINE=false REPLICAS=2 ./scripts/run-all.sh` runs the performance benchmark tests with the
+  test app running in 1 namespace (default) with 2 replicas, skips running the performance baseline test, and uses
+  Istio sidecars instead of ambient (default).
 
 ## Create a Cluster
 

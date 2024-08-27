@@ -104,6 +104,40 @@ if [[ "$MESH" == "ambient" && -z "$UPDATE" ]]; then
   exit 0
 fi
 
+# Apply the sidecar label to the specified namespaces.
+if [[ "$MESH" == "sidecar" && -z "$UPDATE" ]]; then
+  for i in $(seq 1 $NUM_NS); do
+    NAMESPACE="ns-$i"
+    echo "Applying sidecar label to $NAMESPACE..."
+    kubectl label namespace $NAMESPACE istio-injection=enabled --overwrite || {
+      echo "Failed to apply sidecar labels to namespace $NAMESPACE"
+      exit 1
+    }
+    echo "Applying sidecar annotations to test app deployments in $NAMESPACE..."
+    kubectl get deployments -n $NAMESPACE -l kind=3-tier -o custom-columns=NAME:.metadata.name --no-headers | while read -r name; do
+    kubectl patch -n $NAMESPACE deployment "$name" --patch '{
+    "spec": {
+      "template": {
+        "metadata": {
+          "annotations": {
+            "proxy.istio.io/config": "{ \"holdApplicationUntilProxyStarts\": true }",
+            "sidecar.istio.io/proxyMemoryLimit": "1Gi",
+            "sidecar.istio.io/proxyCPULimit": "1",
+            "sidecar.istio.io/proxyMemory": "128Mi",
+            "sidecar.istio.io/proxyCPU": "100m"
+          }
+        }
+      }
+    }
+  }'
+    done || {
+      echo "Failed to apply sidecar annotations to namespace $NAMESPACE"
+      exit 1
+  }
+  done
+  exit 0
+fi
+
 # Construct the correct manifest path based on mesh and policy
 MANIFEST_PATH="manifests/app/$MESH"
 if [[ "$MESH" == "ambient" ]]; then
@@ -114,6 +148,11 @@ if [[ "$MESH" == "ambient" ]]; then
   elif [[ " ${UPDATE[*]} " =~ "waypoint" ]]; then
     MANIFEST_PATH="$MANIFEST_PATH/waypoints"
   fi
+fi
+
+# Sidecar uses the base app manifests.
+if [[ "$MESH" == "sidecar" ]]; then
+  MANIFEST_PATH="manifests/app/base"
 fi
 
 # Apply the manifest
