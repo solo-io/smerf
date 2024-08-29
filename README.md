@@ -28,7 +28,8 @@ Smerf provides tools for performance benchmark testing of service mesh implement
 Ensure the following tools are installed:
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/): The Kubernetes command-line tool.
-- [eksctl](https://eksctl.io/): Required for managing EKS clusters.
+- [eksctl](https://eksctl.io/): Required for managing EKS clusters if the `CREATE_CLUSTER` environment variable is
+  set (defaults to false).
 - [helm](https://helm.sh/docs/intro/install/): A package manager for Kubernetes.
 
 ## Quick Start
@@ -47,8 +48,13 @@ __Environment Variables:__
 - `RPS`: The number of requests per second for the load generator to generate, the default is 150.
 - `DURATION`: The amount of time to generate traffic, the default is 10m.
 - `RUN_BASELINE`: Run the baseline benchmark test, e.g. no service mesh, the default is true.
-- `PROFILE`: The installation profile to use for the service mesh. Supported options are 'ambient' and 'sidecar' for an Istio service mesh.
-- `INSTALL_MESH`: Whether to install the service mesh. If true, the service mesh implementation will be installed based on the configured $PROFILE. Currently, Istio is the only supported service mesh.
+- `PROFILE`: The installation profile to use for the service mesh. Supported options are 'ambient' and 'sidecar' for an
+  Istio service mesh.
+- `INSTALL_MESH`: Whether to install the service mesh. If true, the service mesh implementation will be installed based
+  on the configured $PROFILE. Currently, Istio is the only supported service mesh.
+- `CREATE_CLUSTER`: Creates a Kubernetes cluster used for testing, the default is false. Currently, EKS is the only
+  supported cluster type which requires `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` AWS environment
+  variables to be set.
 
 __Examples:__
 

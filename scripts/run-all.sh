@@ -130,8 +130,10 @@ echo "Deleteing test app..."
 ./scripts/delete.sh app
 
 # Uninstall Istio based on the configured $PROFILE
-echo "Uninstalling Istio in $PROFILE mode..."
-./scripts/uninstall-istio.sh $PROFILE
+if [ "$INSTALL_MESH" = true ]; then
+  echo "Uninstalling Istio in $PROFILE mode..."
+  ./scripts/uninstall-istio.sh $PROFILE
+fi
 
 # Delete the cluster if DELETE_CLUSTER is set to true and CLUSTER_TYPE is "eks"
 if [ "$DELETE_CLUSTER" = true ] && [ "$CLUSTER_TYPE" = "eks" ]; then
