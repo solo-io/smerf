@@ -110,6 +110,9 @@ meshConfig:
     proxyMetadata:
       ISTIO_META_DNS_CAPTURE: "true"
       ISTIO_META_DNS_AUTO_ALLOCATE: "true"
+    proxyStatsMatcher:
+      inclusionRegexps:
+        - "listener.0.0.0.0_15008.*"
   outboundTrafficPolicy:
     mode: ALLOW_ANY
 EOF
