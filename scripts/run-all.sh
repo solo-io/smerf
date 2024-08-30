@@ -44,7 +44,7 @@ fi
 # Create an EKS cluster
 if [ "$CREATE_CLUSTER" = true ]; then
   echo "Creating Kubernetes cluster..."
-  ./scripts/create-perf-cluster.sh
+  ./scripts/create-cluster.sh
 fi
 
 # Run the test app
