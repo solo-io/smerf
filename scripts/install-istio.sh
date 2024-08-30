@@ -3,7 +3,7 @@
 set -e
 
 # The version of Istio to install.
-ISTIO_VERSION=${ISTIO_VERSION:-"1.22.1"}
+ISTIO_VERSION=${ISTIO_VERSION:-"1.23.0"}
 # The repo to use for pulling Istio container images.
 ISTIO_REPO=${ISTIO_REPO:-"docker.io/istio"}
 # A time unit, e.g. 1s, 2m, 3h, to wait for Istio control-plane component deployment rollout to complete.
@@ -30,7 +30,7 @@ if [[ ! " ${valid_profiles[*]} " =~ " $profile " ]]; then
 fi
 
 # Supported Itio version values.
-valid_istio_versions=("1.22.1" "1.22.1-patch0-solo")
+valid_istio_versions=("1.22.1" "1.22.1-patch0-solo" "1.23.0")
 
 # Check if ISTIO_VERSION is valid
 if [[ ! " ${valid_istio_versions[*]} " =~ " $ISTIO_VERSION " ]]; then
@@ -95,6 +95,11 @@ if [[ "$profile" == "ambient" ]]; then
 global:
   hub: $ISTIO_REPO
   tag: $ISTIO_VERSION
+meshConfig:
+  defaultConfig:
+    proxyStatsMatcher:
+      inclusionRegexps:
+        - "listener.0.0.0.0_15008.*"
 profile: ambient
 EOF
 else
@@ -110,9 +115,6 @@ meshConfig:
     proxyMetadata:
       ISTIO_META_DNS_CAPTURE: "true"
       ISTIO_META_DNS_AUTO_ALLOCATE: "true"
-    proxyStatsMatcher:
-      inclusionRegexps:
-        - "listener.0.0.0.0_15008.*"
   outboundTrafficPolicy:
     mode: ALLOW_ANY
 EOF

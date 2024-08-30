@@ -21,13 +21,6 @@ output_file="$output_dir/$file_name-waypoint-envoy-stats.md"
 # Create the output directory if it does not exist
 mkdir -p "$output_dir"
 
-# Clear the output file if it exists
-> "$output_file"
-
-# Write the header for the output file
-# echo "| Name | Namespace | Node | REQUESTS_PER_SECOND | DURATION | CONNECTIONS | MAX_CONNECTIONS |" >> $output_file
-# echo "|------|-----------|------|---------------------|----------|-------------|-----------------|" >> $output_file
-
 # Get all namespaces
 namespaces=$(kubectl get namespaces -o jsonpath="{.items[*].metadata.name}")
 
@@ -38,9 +31,12 @@ for namespace in $namespaces; do
     
     for wp_pod in $wp_pods; do
         # Dump the envoy stats from the `istio-proxy` container
-        wpstats=$(kubectl exec "$wp_pod" -c istio-proxy -- pilot-agent request GET stats)
+        wpstats=$(kubectl exec -n $namespace "$wp_pod" -c istio-proxy -- pilot-agent request GET stats)
 
         waypoint_output_file="$output_dir/$file_name-waypoint-envoy-stats-$wp_pod.md"
+
+        # Clear the output file if it exists
+        > "$waypoint_output_file"
         # Write the envoy stats to the output file
         echo "$wpstats" >> "$waypoint_output_file"
 
