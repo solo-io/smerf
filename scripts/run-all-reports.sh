@@ -90,4 +90,11 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Run the waypoint stats report script (if waypoints present)
+"$script_dir/waypoint-envoy-stats-report.sh" "$file_name"
+if [ $? -ne 0 ]; then
+    echo "Failed to generate waypoint envoy stats report"
+    exit 1
+fi
+
 echo "All reports generated successfully with file name prefix: $file_name"

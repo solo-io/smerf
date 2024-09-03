@@ -16,7 +16,7 @@ REGION=${REGION:-$DEFAULT_REGION}
 # The number of namespaces to run the 3-tier test app.
 NUM_NS=${NUM_NS:-"1"}
 # Set the default number of nodes based on the number of ready nodes
-DEFAULT_NUM_NODES=$(kubectl get nodes | grep -c 'Ready')
+DEFAULT_NUM_NODES=$(kubectl get nodes | grep -c 'Ready' || true)
 NUM_NODES=${NUM_NODES:-$DEFAULT_NUM_NODES}
 # Profile is the service mesh profile to use. Supported options are 'ambient' and 'sidecar'
 PROFILE=${PROFILE:-"ambient"}
@@ -44,7 +44,7 @@ fi
 # Create an EKS cluster
 if [ "$CREATE_CLUSTER" = true ]; then
   echo "Creating Kubernetes cluster..."
-  ./scripts/create-perf-cluster.sh
+  ./scripts/create-cluster.sh
 fi
 
 # Run the test app
