@@ -131,9 +131,8 @@ __Environment Variables:__
 - `NUM_NS`: The number of namespaced vegeta instances, defaults to 1 with a maximum of 25.
 - `ROLLOUT_TIMEOUT`: The amount of time to wait for each vegeta deployment to rollout, defaults to 5m for 5-minutes.
 
-- `ISTIO_VERSION`: The version of Istio to install. Supported options are "1.22.1" (default) and "1.22.1-patch0-solo".
-- `ISTIO_REPO`: The repo to use for pulling Istio container images. Supported options are "docker.io/istio" (default)
-and "us-docker.pkg.dev/gloo-mesh/istio-a9ee4fe9f69a".
+- `ISTIO_VERSION`: The version of Istio to install. Supported versions as 1.22.1 and above, and 1.23 and above.
+- `ISTIO_REPO`: The repo to use for pulling Istio container images. The default is "docker.io/istio".
 - `ROLLOUT_TIMEOUT`: A time unit, e.g. 1s, 2m, 3h, to wait for Istio deployment roll-outs to complete. Defaults to "5m".
 
 ## Update the Test App

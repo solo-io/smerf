@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # The number of namespaces used to run the test app or load generators.
 NUM_NS=${NUM_NS:-"1"}
