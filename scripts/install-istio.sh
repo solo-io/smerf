@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -9,10 +9,10 @@ ISTIO_REPO=${ISTIO_REPO:-"docker.io/istio"}
 # A time unit, e.g. 1s, 2m, 3h, to wait for Istio control-plane component deployment rollout to complete.
 ROLLOUT_TIMEOUT=${ROLLOUT_TIMEOUT:-"5m"}
 
-# Source the utility functions
+# Source the utility functions.
 source ./scripts/utils.sh
 
-# Check if the installation profile argument is provided
+# Check if the installation profile argument is provided.
 if [ -z "$1" ]; then
     echo "Usage: $0 <installation_profile>"
     exit 1
@@ -23,31 +23,22 @@ profile=$1
 # Supported install profile values.
 valid_profiles=("ambient" "sidecar")
 
-# Check if NUM_NS is valid
+# Check if NUM_NS is valid.
 if [[ ! " ${valid_profiles[*]} " =~ " $profile " ]]; then
   echo "Invalid value for profile. Supported values are 'ambient' and 'sidecar'"
   exit 1
 fi
 
-# Supported Itio version values.
-valid_istio_versions=("1.22.1" "1.22.1-patch0-solo" "1.23.0")
+# Supported Itio version values are 1.22.1 and newer.
+minor_version=$(echo $ISTIO_VERSION | cut -d. -f2)
+patch_version=$(echo $ISTIO_VERSION | cut -d. -f3 | cut -d- -f1)
 
-# Check if ISTIO_VERSION is valid
-if [[ ! " ${valid_istio_versions[*]} " =~ " $ISTIO_VERSION " ]]; then
-  echo "Invalid value for ISTIO_VERSION. Supported values are '1.22.1' and '1.22.1-patch0-solo'."
+if [[ "$minor_version" -lt 22 ]] || [[ "$minor_version" -eq 22 && "$patch_version" -lt 1 ]]; then
+  echo "Invalid value for ISTIO_VERSION. Supported versions are 1.22.1 and newer."
   exit 1
 fi
 
-# Supported Itio repo values.
-valid_istio_repos=("docker.io/istio" "us-docker.pkg.dev/gloo-mesh/istio-a9ee4fe9f69a")
-
-# Check if ISTIO_REPO is valid
-if [[ ! " ${valid_istio_repos[*]} " =~ " $ISTIO_REPO " ]]; then
-  echo "Invalid value for ISTIO_REPO. Supported values are 'docker.io/istio' and 'us-docker.pkg.dev/gloo-mesh/istio-a9ee4fe9f69a'."
-  exit 1
-fi
-
-# Check if required CLI tools are installed
+# Check if required CLI tools are installed.
 for cmd in kubectl helm; do
   if ! command_exists $cmd; then
     echo "$CMD is not installed. Please install $cmd before running this script."
@@ -55,18 +46,18 @@ for cmd in kubectl helm; do
   fi
 done
 
-# Add Istio helm repo
+# Add Istio helm repo.
 helm repo add istio https://istio-release.storage.googleapis.com/charts
 helm repo update
 
-# Install istio-base
+# Install istio-base.
 helm upgrade --install istio-base istio/base -n istio-system --version $ISTIO_VERSION --create-namespace
 
-# Install Kubernetes Gateway CRDs
+# Install Kubernetes Gateway CRDs.
 kubectl get crd gateways.gateway.networking.k8s.io &> /dev/null || \
   { kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v1.0.0" | kubectl apply -f -; }
 
-# Create the istio cni config file
+# Create the istio cni config file.
 if [[ "$profile" == "ambient" ]]; then
   cat << EOF > istio-cni-config.yaml
 global:
@@ -75,21 +66,21 @@ global:
 profile: ambient
 EOF
 
-  # Echo the contents of the config file
+  # Echo the contents of the config file.
   echo "Generated istio-cni-node configuration:"
   cat istio-cni-config.yaml
 
-  # Install istio cni
+  # Install istio cni.
   helm upgrade --install istio-cni istio/cni \
   -n istio-system \
   --version=$ISTIO_VERSION \
   -f istio-cni-config.yaml
 
-  # Wait for the istio cni daemonset rollout to complete
+  # Wait for the istio cni daemonset rollout to complete.
   ds_rollout_status "istio-cni-node" "istio-system"
 fi
 
-# Create the istiod config file
+# Create the istiod config file.
 if [[ "$profile" == "ambient" ]]; then
   cat << EOF > istiod-config.yaml
 global:
@@ -120,22 +111,22 @@ meshConfig:
 EOF
 fi
 
-# Echo the contents of the istiod config file
+# Echo the contents of the istiod config file.
 echo "Generated istiod configuration:"
 cat istiod-config.yaml
 
-# Install Istiod
+# Install Istiod.
 helm upgrade --install istiod istio/istiod \
 -n istio-system \
 --version=$ISTIO_VERSION \
 -f istiod-config.yaml
 
-# Wait for the istiod deployment rollout to complete
+# Wait for the istiod deployment rollout to complete.
 deploy_rollout_status "istiod" "istio-system"
 
 # TODO: Update the sidecar injector configmap for ambient waypoint anti-affinity.
 
-# Create the ztunnel config file
+# Create the ztunnel config file.
 if [[ "$profile" == "ambient" ]]; then
   cat << EOF > istio-ztunnel-config.yaml
 variant: distroless
@@ -143,7 +134,7 @@ hub: $ISTIO_REPO
 tag: $ISTIO_VERSION
 EOF
 
-  # Echo the contents of the config file
+  # Echo the contents of the config file.
   echo "Generated istio-ztunnel configuration:"
   cat istio-ztunnel-config.yaml
 
@@ -153,7 +144,7 @@ EOF
   --version=$ISTIO_VERSION \
   -f istio-ztunnel-config.yaml
 
-  # Wait for the ztunnel daemonset rollout to complete
+  # Wait for the ztunnel daemonset rollout to complete.
   ds_rollout_status "ztunnel" "istio-system"
 fi
 
